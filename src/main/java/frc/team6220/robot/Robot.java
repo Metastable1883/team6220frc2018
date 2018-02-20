@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot {
     private Counter countIn = new Counter(lsIn);
     private Counter countUp = new Counter(lsUp);
     private Counter countDown = new Counter(lsDown);
-    private WPI_TalonSRX grip = new  WPI_TalonSRX(6);
-    private WPI_TalonSRX height  = new WPI_TalonSRX(5);
+    private VictorSP grip = new  VictorSP(1);
+    private VictorSP height  = new VictorSP(0);
     private WPI_TalonSRX four = new WPI_TalonSRX(4);
     private WPI_TalonSRX three = new WPI_TalonSRX(3);
     private WPI_TalonSRX two = new WPI_TalonSRX(2);
@@ -53,26 +53,30 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic()
     {
-        m_myRobot.arcadeDrive((0-1)*xbox.getX(GenericHID.Hand.kLeft),(0-1)*(xbox.getTriggerAxis(GenericHID.Hand.kRight)-(xbox.getTriggerAxis(GenericHID.Hand.kLeft))));
-        if(countDown.get() == 0 && stick.getY() < 0)
+        m_myRobot.arcadeDrive(xbox.getX(GenericHID.Hand.kLeft),(xbox.getTriggerAxis(GenericHID.Hand.kRight)-(xbox.getTriggerAxis(GenericHID.Hand.kLeft))));
+        if(stick.getY() < 0)//countDown.get() == 0
         {
             height.set(stick.getY());
             countUp.reset();
         }
-        if(countUp.get() == 0 && stick.getY() > 0)
+        if(stick.getY() > 0)//countUp.get() == 0
         {
             height.set(stick.getY());
             countDown.reset();
         }
-        if(countIn.get() == 0 && stick.getRawButton(1))
+        if(stick.getRawButton(1))//countIn.get() == 0
         {
             grip.set(.3);
             countOut.reset();
         }
-        if(countOut.get() == 0 && stick.getRawButton(2))
+        if(stick.getRawButton(2))//countOut.get() == 0
         {
             grip.set(-.3);
             countIn.reset();
+        }
+        else
+        {
+            grip.set(0);
         }
     }
 
