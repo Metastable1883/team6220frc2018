@@ -30,14 +30,23 @@ public class Robot extends IterativeRobot {
     private Counter countIn = new Counter(lsIn);
     private Counter countUp = new Counter(lsUp);
     private Counter countDown = new Counter(lsDown);
-    private VictorSP grip = new  VictorSP(1);
-    private VictorSP height  = new VictorSP(0);
+    private VictorSP grip = new  VictorSP(2);
+    private VictorSP height1 = new  VictorSP(1);
+    private VictorSP height0  = new VictorSP(0);
+    private VictorSP aim = new VictorSP(3);
+    private VictorSPX climb1 = new VictorSPX(4);
+    private VictorSPX climb2 = new VictorSPX(5);
+    //private Spark rSpark = new Spark(0); Fix Sparks
+    //private Spark lSpark = new Spark(1);
     private WPI_TalonSRX four = new WPI_TalonSRX(4);
     private WPI_TalonSRX three = new WPI_TalonSRX(3);
     private WPI_TalonSRX two = new WPI_TalonSRX(2);
     private WPI_TalonSRX one = new WPI_TalonSRX(1);
     private SpeedControllerGroup gogo = new SpeedControllerGroup(one,two);
     private SpeedControllerGroup gogo2 = new SpeedControllerGroup(three,four);
+    private Solenoid s1 = new Solenoid(0);
+    private Solenoid s2 = new Solenoid(1);
+    private Compressor c1 = new Compressor(0);
     private XboxController xbox;
     private Joystick stick;
     int time = 750;
@@ -53,30 +62,49 @@ public class Robot extends IterativeRobot {
     @Override
     public void teleopPeriodic()
     {
-        m_myRobot.arcadeDrive(xbox.getX(GenericHID.Hand.kLeft),(xbox.getTriggerAxis(GenericHID.Hand.kRight)-(xbox.getTriggerAxis(GenericHID.Hand.kLeft))));
+        m_myRobot.arcadeDrive(xbox.getX(GenericHID.Hand.kLeft), xbox.getTriggerAxis(GenericHID.Hand.kRight) - (xbox.getTriggerAxis(GenericHID.Hand.kLeft)));
+        aim.set(xbox.getY(GenericHID.Hand.kRight));
+        if(xbox.getYButton())
+        {
+            climb1.set(null, 1);
+            climb2.set(null, 1);
+        }
         if(stick.getY() < 0)//countDown.get() == 0
         {
-            height.set(stick.getY());
+            height1.set(stick.getY());
+            height0.set(stick.getY());
             countUp.reset();
         }
         if(stick.getY() > 0)//countUp.get() == 0
         {
-            height.set(stick.getY());
+            height1.set(stick.getY());
+            height0.set(stick.getY());
             countDown.reset();
         }
-        if(stick.getRawButton(1))//countIn.get() == 0
-        {
-            grip.set(.3);
-            countOut.reset();
-        }
-        if(stick.getRawButton(2))//countOut.get() == 0
-        {
-            grip.set(-.3);
-            countIn.reset();
-        }
-        else
+		/*if(xbox.getXButton())
+		{
+			rSpark.set(.3);
+			lSpark.set(-.3);
+		}
+		if(xbox.getAButton())
+		{
+			rSpark.set(-.3);
+			lSpark.set(.3);
+		}
+		*/
+        if(stick.getRawButton(1) == false && stick.getRawButton(2) == false)
         {
             grip.set(0);
+        }
+        if(stick.getRawButton(4))
+        {
+            s1.set(true);
+            s2.set(false);
+        }
+        if(stick.getRawButton(3))
+        {
+            s1.set(false);
+            s2.set(true);
         }
     }
 
